@@ -1,147 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
- * {
-     margin: 0;
-     padding: 0;
-     box-sizing: border-box;
- }
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1935CA, #6A88FF);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+}
 
- body {
-     font-family: 'Poppins', sans-serif;
-     background: linear-gradient(135deg, #1935CA, #6A88FF);
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: flex-start; 
-     height: 100vh;
-     text-align: center;
-     color: white;
-     overflow: hidden;
- }
+/* Cabeçalho fixo */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
 
- /* Cabeçalho fixo */
- header {
-     position: fixed;
-     top: 0;
-     left: 0;
-     width: 100%;
-     display: flex;
-     justify-content: space-between;
-     align-items: center;
-     padding: 20px 40px;
-     background: rgba(255, 255, 255, 0.15);
-     backdrop-filter: blur(10px);
-     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-     z-index: 1000;
- }
+header a.site-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: color 0.3s;
+}
 
- header a.site-title {
-     font-size: 28px;
-     font-weight: 700;
-     color: #FFFFFF;
-     text-decoration: none;
-     transition: color 0.3s;
- }
+header a.site-title:hover {
+    color: #E0E0E0;
+}
 
- header a.site-title:hover {
-     color: #E0E0E0;
- }
+/* Container ajustável */
+.container {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 1200px;
+    width: 90%;
+    margin-top: 100px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
 
- /* Container ajustável */
- .container {
-     background: rgba(255, 255, 255, 0.9);
-     padding: 30px;
-     border-radius: 10px;
-     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-     max-width: 1200px;
-     width: 90%;
-     margin-top: 100px; 
-     max-height: 75vh; 
-     overflow-y: auto; 
- }
+/* Título */
+h1 {
+    font-size: 24px;
+    color: #1935CA;
+    margin-bottom: 15px;
+}
 
- h1 {
-     font-size: 24px;
-     color: #1935CA;
-     margin-bottom: 15px;
- }
+/* Container do PIN e QR Code */
+.pin-qrcode-container {
+    display: flex;
+    flex-direction: column; /* Mantém o PIN acima do QR Code */
+    align-items: center;
+    gap: 10px; /* Espaçamento entre PIN e QR Code */
+    margin: 10px 0;
+}
 
- .pin-display {
-     font-size: 20px;
-     font-weight: bold;
-     color: #333;
-     background: #E3EAFD;
-     padding: 10px 15px;
-     border-radius: 5px;
-     margin-bottom: 20px;
-     width: 30%;
-     margin-left: auto;
-     margin-right: auto;
- }
+/* Caixa do PIN */
+.pin-box {
+    font-size: 22px;
+    font-weight: bold;
+    color: #1935CA;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px; /* Garante que o tamanho do PIN não fique pequeno */
+}
 
- /* Grade de jogadores */
- .players-container {
-     display: grid;
-     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-     gap: 15px;
-     background: #FFFFFF;
-     padding: 20px;
-     border-radius: 8px;
-     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-     margin-top: 20px;
-     max-width: 100%;
-     min-height: 200px;
-     max-height: 400px;
-     overflow-y: auto;
-     text-align: center;
-     color: #333;
- }
+/* QR Code */
+#qrcode {
+    width: 150px;
+    height: 150px;
+}
 
- /* Estilo dos jogadores */
- .player-box {
-     background: #1935CA;
-     color: white;
-     padding: 15px;
-     border-radius: 8px;
-     font-weight: bold;
-     font-size: 16px;
-     text-transform: uppercase;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     min-height: 60px;
- }
+/* Lista de jogadores */
+.players-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
 
- /* Botão iniciar */
- .start-button {
-     width: 30%;
-     padding: 12px;
-     font-size: 16px;
-     font-weight: 600;
-     color: white;
-     background-color: #34C759;
-     border: none;
-     border-radius: 8px;
-     cursor: pointer;
-     margin-top: 20px;
- }
+.player-box {
+    background: #1935CA;
+    color: white;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    font-size: 16px;
+}
 
- .start-button:hover {
-     background-color: #28A745;
- }
+/* Botão iniciar */
+.start-button {
+    width: 30%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background-color: #34C759;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+}
 
- /* 🔔 Estilização do alerta customizado */
- .custom-alert {
-     position: fixed;
-     top: 20px;
-     left: 50%;
-     transform: translateX(-50%);
-     background: #FF3B30;
-     color: white;
-     padding: 15px 20px;
-     border-radius: 8px;
-     font-size: 16px;
-     font-weight: bold;
-     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-     display: none;
-     z-index: 2000;
- }
+.start-button:hover {
+    background-color: #28A745;
+}
+
+/* Estilização do alerta customizado */
+.custom-alert {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #FF3B30;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    display: none;
+    z-index: 2000;
+}

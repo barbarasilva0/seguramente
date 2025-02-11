@@ -11,13 +11,15 @@
     Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
-    
+
     // Criando um PIN aleatório para o lobby
     Random rand = new Random();
     int pinLobby = 1000 + rand.nextInt(9000); // Gera um PIN entre 1000 e 9999
 
     // Obtendo o ID do quiz da URL
     String idJogo = request.getParameter("id");
+    if (idJogo == null) idJogo = "0"; // Tratamento para evitar valores null
+
     String tituloQuiz = "Quiz Desconhecido";
     
     try {
@@ -43,6 +45,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lobby do Quiz - <%= tituloQuiz %></title>
     <link rel="stylesheet" href="html/css/lobby.css">
+    
+    <!-- Importação da biblioteca QRCode.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -56,22 +61,36 @@
 
     <!-- Container principal -->
     <div class="container">
-        <h1>Lobby do Quiz - <%= tituloQuiz %></h1>
-        <div id="pin-display" class="pin-display">PIN: <%= pinLobby %></div>
+        <h1><%= tituloQuiz %></h1>
+        
+        <!-- Seção do PIN e QR Code -->
+        <div class="pin-qrcode-container">
+            <div class="pin-box">
+                <span>PIN:</span>
+                <div id="pin-display"><%= pinLobby %></div>
+            </div>
+            <div id="qrcode"></div> <!-- O código QR será gerado aqui -->
+        </div>
 
+        <!-- Botão de iniciar quiz -->
         <button class="start-button" onclick="startQuiz()">Iniciar Quiz</button>
 
+        <!-- Lista de jogadores -->
+        <h3>Jogadores no Lobby</h3>
         <div class="players-container" id="players-container">
-            <!-- Lista de jogadores em grade será adicionada aqui -->
+            <!-- Lista dinâmica de jogadores será adicionada aqui -->
         </div>
     </div>
 
 	<script>
 	    let players = []; // Lista de jogadores conectados
 	
-	    // Definição correta das variáveis para evitar o erro
+	    // Definição correta das variáveis JavaScript
 	    const pinLobby = "<%= pinLobby %>"; 
 	    const idJogo = "<%= idJogo %>"; 
+	
+	    // Criamos a URL do lobby para ser compartilhada via QR Code
+	    const lobbyLink = `${window.location.origin}/jsp/lobby.jsp?id=${idJogo}&pin=${pinLobby}`;
 	
 	    function getNicknameFromUrl() {
 	        const params = new URLSearchParams(window.location.search);
@@ -99,25 +118,38 @@
 	
 	    function startQuiz() {
 	        if (players.length > 1) {
-	            // Passamos diretamente as variáveis JS na URL sem encodeURIComponent no JSP
-	            window.location.href = "quizz.jsp?id=" + encodeURIComponent(idJogo) + "&pin=" + encodeURIComponent(pinLobby);
+	            const quizUrl = "quizz.jsp?id=" + encodeURIComponent(idJogo) + "&pin=" + encodeURIComponent(pinLobby);
+	            window.location.href = quizUrl;
 	        } else {
-	            showAlert("Aguarde mais jogadores para iniciar o quiz!");
+	            showCustomAlert("Aguarde mais jogadores para iniciar o quiz!");
 	        }
 	    }
 	
-	    // 🔔 Função para exibir o alerta estilizado
-	    function showAlert(message) {
+	    // Função para exibir o alerta customizado
+	    function showCustomAlert(message) {
 	        const alertBox = document.getElementById("custom-alert");
 	        alertBox.textContent = message;
 	        alertBox.style.display = "block";
+	
 	        setTimeout(() => {
 	            alertBox.style.display = "none";
 	        }, 3000);
 	    }
 	
+	    // Função para gerar QR Code usando QRCode.js
+	    function generateQRCode() {
+	        const qrCodeDiv = document.getElementById("qrcode");
+	        qrCodeDiv.innerHTML = ""; // Limpa QR Code anterior, se houver
+	        new QRCode(qrCodeDiv, {
+	            text: lobbyLink,
+	            width: 150,
+	            height: 150
+	        });
+	    }
+	
 	    // Inicializa a página
 	    addPlayer(getNicknameFromUrl());
+	    generateQRCode(); // Gera o QR Code ao carregar a página
 	</script>
 
 </body>
