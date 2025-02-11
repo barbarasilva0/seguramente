@@ -152,5 +152,6 @@
 	    generateQRCode(); // Gera o QR Code ao carregar a página
 	</script>
 
+
 </body>
 </html>
