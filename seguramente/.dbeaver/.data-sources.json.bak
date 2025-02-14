@@ -1,38 +1,4 @@
 {
 	"folders": {},
-	"connections": {
-		"mysql8-194f21600f2-f8a6f9c007e7c3d": {
-			"provider": "mysql",
-			"driver": "mysql8",
-			"name": "segura",
-			"save-password": true,
-			"configuration": {
-				"host": "localhost",
-				"port": "3306",
-				"database": "segura",
-				"url": "jdbc:mysql://localhost:3306/segura",
-				"configurationType": "MANUAL",
-				"home": "mysql_client",
-				"type": "dev",
-				"closeIdleConnection": true,
-				"auth-model": "native"
-			}
-		}
-	},
-	"connection-types": {
-		"dev": {
-			"name": "Development",
-			"color": "255,255,255",
-			"description": "Regular development database",
-			"auto-commit": true,
-			"confirm-execute": false,
-			"confirm-data-change": false,
-			"smart-commit": false,
-			"smart-commit-recover": false,
-			"auto-close-transactions": true,
-			"close-transactions-period": 1800,
-			"auto-close-connections": true,
-			"close-connections-period": 14400
-		}
-	}
+	"connections": {}
 }

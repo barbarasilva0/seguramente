@@ -1,25 +1,37 @@
 {
 	"folders": {},
 	"connections": {
-		"mysql8-194f227be8d-15927aadb30189dd": {
+		"mysql8-19506304dc9-39a0e4c268bd9ad7": {
 			"provider": "mysql",
 			"driver": "mysql8",
-			"name": "segura",
+			"name": "segura_jogos",
 			"save-password": true,
 			"configuration": {
 				"host": "localhost",
 				"port": "3306",
-				"database": "segura",
-				"url": "jdbc:mysql://localhost:3306/segura",
+				"database": "segura_jogos",
+				"url": "jdbc:mysql://localhost:3306/segura_jogos",
 				"configurationType": "MANUAL",
 				"home": "mysql_client",
 				"type": "dev",
 				"closeIdleConnection": true,
-				"properties": {
-					"connectTimeout": "20000",
-					"rewriteBatchedStatements": "true",
-					"enabledTLSProtocols": "TLSv1,TLSv1.1,TLSv1.2,TLSv1.3"
-				},
+				"auth-model": "native"
+			}
+		},
+		"mysql8-1950631037c-4b0fbe91aa83635d": {
+			"provider": "mysql",
+			"driver": "mysql8",
+			"name": "segura_utilizadores",
+			"save-password": true,
+			"configuration": {
+				"host": "localhost",
+				"port": "3306",
+				"database": "segura_utilizadores",
+				"url": "jdbc:mysql://localhost:3306/segura_utilizadores",
+				"configurationType": "MANUAL",
+				"home": "mysql_client",
+				"type": "dev",
+				"closeIdleConnection": true,
 				"auth-model": "native"
 			}
 		}
