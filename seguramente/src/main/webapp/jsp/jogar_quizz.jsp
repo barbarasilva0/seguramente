@@ -3,12 +3,11 @@
 <%@ page import="javax.servlet.http.HttpSession" %>
 
 <%
-    // Conexão com o Banco de Dados
-    String url = "jdbc:mysql://localhost:3306/segura";
-    String user = "root"; // Substituir pelo usuário real do MySQL
-    String password = "!5xne5Qui8900"; // Substituir pela senha real do MySQL
-    Connection conn = null;
-    Statement stmt = null;
+    // Conexão com os Bancos de Dados
+    Connection connJogos = null;
+    Connection connUtilizadores = null;
+    Statement stmtJogos = null;
+    Statement stmtUtilizadores = null;
     ResultSet rs = null;
 
     // Obtendo ID do Quiz a partir da URL
@@ -16,19 +15,21 @@
     String tituloQuiz = "Quiz Desconhecido";
     String descricaoQuiz = "Descrição não disponível.";
     String dataCriacao = "Data não encontrada";
-    int pontos = 0;
     String criadoPor = "Desconhecido";
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(url, user, password);
-        stmt = conn.createStatement();
+        connJogos = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_jogos", "root", "!5xne5Qui8900");
+        connUtilizadores = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_utilizadores", "root", "!5xne5Qui8900");
+        
+        stmtJogos = connJogos.createStatement();
+        stmtUtilizadores = connUtilizadores.createStatement();
 
         // Consulta para obter informações do quiz
         String query = "SELECT J.Nome, J.Descricao, J.Data_Criacao, J.Criado_por, U.Nome AS Criador " +
-                       "FROM Jogo J LEFT JOIN Utilizador U ON J.Criado_por = U.ID_Utilizador " +
+                       "FROM Jogo J LEFT JOIN segura_utilizadores.Utilizador U ON J.Criado_por = U.ID_Utilizador " +
                        "WHERE J.ID_Jogo = " + idJogo;
-        rs = stmt.executeQuery(query);
+        rs = stmtJogos.executeQuery(query);
 
         if (rs.next()) {
             tituloQuiz = rs.getString("Nome");
@@ -38,6 +39,8 @@
         }
     } catch (Exception e) {
         e.printStackTrace();
+    } finally {
+        try { if (rs != null) rs.close(); if (stmtJogos != null) stmtJogos.close(); if (stmtUtilizadores != null) stmtUtilizadores.close(); if (connJogos != null) connJogos.close(); if (connUtilizadores != null) connUtilizadores.close(); } catch (Exception e) { e.printStackTrace(); }
     }
 %>
 

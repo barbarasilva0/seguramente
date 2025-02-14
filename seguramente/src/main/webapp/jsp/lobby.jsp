@@ -5,7 +5,7 @@
 
 <%
     // Conexão com o Banco de Dados
-    String url = "jdbc:mysql://localhost:3306/segura";
+    String url = "jdbc:mysql://localhost:3306/segura_jogos";
     String user = "root"; // Substituir pelo usuário real do MySQL
     String password = "!5xne5Qui8900"; // Substituir pela senha real do MySQL
     Connection conn = null;

@@ -3,13 +3,12 @@
 <%@ page import="javax.servlet.http.HttpSession" %>
 
 <%
-	// Conexão com o Banco de Dados
-	String url = "jdbc:mysql://localhost:3306/segura";
-	String user = "root"; // Substituir pelo usuário real do MySQL
-	String password = "!5xne5Qui8900"; // Substituir pela senha real do MySQL
-	Connection conn = null;
-	Statement stmt = null;
-	ResultSet rs = null;
+    // Conexão com os Bancos de Dados
+    Connection connUtilizadores = null;
+    Connection connJogos = null;
+    Statement stmtUtilizadores = null;
+    Statement stmtJogos = null;
+    ResultSet rs = null;
     int quizzesCompletados = 0;
 
     // Verificação de sessão do usuário
@@ -19,13 +18,16 @@
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection(url, user, password);
-        stmt = conn.createStatement();
+        connUtilizadores = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_utilizadores", "root", "!5xne5Qui8900");
+        connJogos = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_jogos", "root", "!5xne5Qui8900");
+        
+        stmtUtilizadores = connUtilizadores.createStatement();
+        stmtJogos = connJogos.createStatement();
 
         // Contar quizzes completados pelo usuário
         if (idUsuario > 0) {
-            String countQuery = "SELECT COUNT(*) AS total FROM Historico WHERE ID_Utilizador = " + idUsuario + " AND Estado = 'Completado'";
-            ResultSet rsCount = stmt.executeQuery(countQuery);
+            String countQuery = "SELECT COUNT(*) AS total FROM Historico WHERE ID_Utilizador = " + idUsuario + " AND Estado = 'Concluído'";
+            ResultSet rsCount = stmtJogos.executeQuery(countQuery);
             if (rsCount.next()) {
                 quizzesCompletados = rsCount.getInt("total");
             }
@@ -105,7 +107,7 @@
                 <!-- Listagem dinâmica dos quizzes -->
                 <%
                     try {
-                        rs = stmt.executeQuery("SELECT ID_Jogo, Nome, Descricao FROM Jogo");
+                        rs = stmtJogos.executeQuery("SELECT ID_Jogo, Nome, Descricao FROM Jogo");
                         while (rs.next()) {
                 %>
                 <div class="quiz-card">
@@ -123,7 +125,7 @@
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
-                        try { if (rs != null) rs.close(); if (stmt != null) stmt.close(); if (conn != null) conn.close(); } catch (Exception e) { e.printStackTrace(); }
+                        try { if (rs != null) rs.close(); if (stmtUtilizadores != null) stmtUtilizadores.close(); if (stmtJogos != null) stmtJogos.close(); if (connUtilizadores != null) connUtilizadores.close(); if (connJogos != null) connJogos.close(); } catch (Exception e) { e.printStackTrace(); }
                     }
                 %>
             </div>
