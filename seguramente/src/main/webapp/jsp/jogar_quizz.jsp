@@ -3,44 +3,80 @@
 <%@ page import="javax.servlet.http.HttpSession" %>
 
 <%
-    // Conexão com os Bancos de Dados
-    Connection connJogos = null;
-    Connection connUtilizadores = null;
-    Statement stmtJogos = null;
-    Statement stmtUtilizadores = null;
-    ResultSet rs = null;
+    // Obtém sessão do usuário
+    HttpSession sessao = request.getSession();
+    String nomeUsuario = (String) sessao.getAttribute("nomeUsuario");
+    Integer idUsuario = (Integer) sessao.getAttribute("idUsuario");
+    boolean usuarioLogado = (nomeUsuario != null);
 
-    // Obtendo ID do Quiz a partir da URL
+    // Obtém ID do Jogo da URL
     String idJogo = request.getParameter("id");
+    
+    // Variáveis do jogo
     String tituloQuiz = "Quiz Desconhecido";
     String descricaoQuiz = "Descrição não disponível.";
     String dataCriacao = "Data não encontrada";
     String criadoPor = "Desconhecido";
+    String pin = null;
+
+    Connection conn = null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        connJogos = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_jogos", "root", "!5xne5Qui8900");
-        connUtilizadores = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_utilizadores", "root", "!5xne5Qui8900");
-        
-        stmtJogos = connJogos.createStatement();
-        stmtUtilizadores = connUtilizadores.createStatement();
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_jogos", "root", "!5xne5Qui8900");
 
-        // Consulta para obter informações do quiz
-        String query = "SELECT J.Nome, J.Descricao, J.Data_Criacao, J.Criado_por, U.Nome AS Criador " +
+        // 🔹 Buscar informações do quiz
+        String query = "SELECT J.Nome, J.Descricao, J.Data_Criacao, U.Nome AS Criador " +
                        "FROM Jogo J LEFT JOIN segura_utilizadores.Utilizador U ON J.Criado_por = U.ID_Utilizador " +
-                       "WHERE J.ID_Jogo = " + idJogo;
-        rs = stmtJogos.executeQuery(query);
+                       "WHERE J.ID_Jogo = ?";
+        stmt = conn.prepareStatement(query);
+        stmt.setString(1, idJogo);
+        rs = stmt.executeQuery();
 
         if (rs.next()) {
             tituloQuiz = rs.getString("Nome");
             descricaoQuiz = rs.getString("Descricao");
             dataCriacao = rs.getString("Data_Criacao");
-            criadoPor = rs.getString("Criador") != null ? rs.getString("Criador") : "Desconhecido";
+            criadoPor = (rs.getString("Criador") != null) ? rs.getString("Criador") : "Desconhecido";
         }
+        rs.close();
+        stmt.close();
+
+        // 🔹 Garante que há um PIN associado ao jogo e ao criador
+        if (idUsuario != null) {
+            String checkLobbyQuery = "SELECT PIN FROM Lobby WHERE ID_Jogo = ? AND Criado_por = ?";
+            stmt = conn.prepareStatement(checkLobbyQuery);
+            stmt.setString(1, idJogo);
+            stmt.setInt(2, idUsuario);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                pin = rs.getString("PIN"); // 🔹 Reutiliza PIN existente
+            } else {
+                // 🔹 Se não existir, gera um novo PIN
+                pin = String.valueOf(100000 + (int) (Math.random() * 900000));
+                String insertLobbyQuery = "INSERT INTO Lobby (ID_Jogo, PIN, Criado_por) VALUES (?, ?, ?)";
+                stmt = conn.prepareStatement(insertLobbyQuery);
+                stmt.setString(1, idJogo);
+                stmt.setString(2, pin);
+                stmt.setInt(3, idUsuario);
+                stmt.executeUpdate();
+            }
+            rs.close();
+            stmt.close();
+        }
+
     } catch (Exception e) {
         e.printStackTrace();
     } finally {
-        try { if (rs != null) rs.close(); if (stmtJogos != null) stmtJogos.close(); if (stmtUtilizadores != null) stmtUtilizadores.close(); if (connJogos != null) connJogos.close(); if (connUtilizadores != null) connUtilizadores.close(); } catch (Exception e) { e.printStackTrace(); }
+        try {
+            if (stmt != null) stmt.close();
+            if (conn != null) conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 %>
 
@@ -138,6 +174,51 @@
     </div>
 
     <script>
+	    // Garante que o código só execute depois que a página for carregada
+	    document.addEventListener("DOMContentLoaded", function () {
+	        const startQuizBtn = document.getElementById("start-quiz-btn");
+	        const quizModeModal = document.getElementById("quiz-mode-modal");
+	
+	        if (startQuizBtn) {
+	            startQuizBtn.addEventListener("click", function () {
+	                quizModeModal.classList.add("show");
+	            });
+	        } else {
+	            console.error("Botão 'Começar o Quiz' não encontrado.");
+	        }
+	
+	        // Modal de Escolha do Modo de Jogo
+	        const playSoloBtn = document.getElementById("play-solo");
+	        const playMultiBtn = document.getElementById("play-multi");
+	        const cancelQuizBtn = document.getElementById("cancel-quiz");
+	
+	        if (playSoloBtn) {
+	            playSoloBtn.addEventListener("click", function () {
+	                let idJogo = "<%= idJogo %>";
+	                window.location.href = "quizz.jsp?id=" + encodeURIComponent(idJogo);
+	            });
+	        }
+	
+	        if (playMultiBtn) {
+	            playMultiBtn.addEventListener("click", function () {
+	                let idJogo = "<%= idJogo %>";
+	                let pin = "<%= (pin != null) ? pin : "" %>";
+	
+	                if (pin.trim() !== "") {
+	                    window.location.href = "lobby.jsp?id=" + encodeURIComponent(idJogo) + "&pin=" + encodeURIComponent(pin);
+	                } else {
+	                    alert("Erro ao criar ou recuperar o lobby.");
+	                }
+	            });
+	        }
+	
+	        if (cancelQuizBtn) {
+	            cancelQuizBtn.addEventListener("click", function () {
+	                quizModeModal.classList.remove("show");
+	            });
+	        }
+	    });
+    
         const logoutLink = document.getElementById('logout');
         const logoutModal = document.getElementById('logout-modal');
         const confirmYes = document.getElementById('confirmYes');
@@ -162,22 +243,7 @@
             logoutModal.classList.remove('show');
         });
 
-        // Modal de Escolha do Modo de Jogo
-        startQuizBtn.addEventListener('click', () => {
-            quizModeModal.classList.add('show');
-        });
 
-        playSoloBtn.addEventListener('click', () => {
-            window.location.href = 'quizz.jsp?id=<%= idJogo %>';
-        });
-
-        playMultiBtn.addEventListener('click', () => {
-            window.location.href = 'lobby.jsp?id=<%= idJogo %>';
-        });
-
-        cancelQuizBtn.addEventListener('click', () => {
-            quizModeModal.classList.remove('show');
-        });
     </script>
 </body>
 </html>

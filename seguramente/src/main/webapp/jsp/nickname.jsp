@@ -1,13 +1,52 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.sql.*" %>
 <%@ page import="javax.servlet.http.HttpSession" %>
 
 <%
+    // Verificar sessão do usuário
     HttpSession sessao = request.getSession();
     String nomeUsuario = (String) sessao.getAttribute("nomeUsuario");
     boolean usuarioLogado = (nomeUsuario != null);
+
+    // Obter o PIN da URL
     String pin = request.getParameter("pin");
-    if (pin == null) {
-        pin = "PIN não fornecido";
+    boolean pinValido = false;
+
+    if (pin != null && !pin.isEmpty()) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/segura_jogos", "root", "!5xne5Qui8900");
+
+            String checkQuery = "SELECT * FROM Lobby WHERE PIN = ?";
+            stmt = conn.prepareStatement(checkQuery);
+            stmt.setString(1, pin);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                pinValido = true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // Se o PIN for inválido, redireciona para "jogar_agora.jsp"
+    if (!pinValido) {
+        response.sendRedirect("jogar_agora.jsp");
+        return;
     }
 %>
 
@@ -46,15 +85,12 @@
         function enterLobby() {
             const nickname = document.getElementById("nickname").value.trim();
             const errorMessage = document.getElementById("error-message");
-            
+
             if (nickname) {
-                const pin = "<%= pin %>";
-                window.location.href = "lobby.jsp?pin=" + encodeURIComponent(pin) + "&nickname=" + encodeURIComponent(nickname);
+                window.location.href = "lobby.jsp?pin=" + encodeURIComponent("<%= pin %>") + "&nickname=" + encodeURIComponent(nickname);
             } else {
                 errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                }, 3000);
+                setTimeout(() => { errorMessage.style.display = 'none'; }, 3000);
             }
         }
     </script>
