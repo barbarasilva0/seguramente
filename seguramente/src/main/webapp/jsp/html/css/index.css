@@ -193,3 +193,13 @@ footer {
     font-size: 16px;
     color: #000;
 }
+
+.footer-link {
+    color: #000;
+    text-decoration: none;
+    border: 1px solid red; 
+    background-color: yellow; 
+}
+.footer-link:hover {
+    text-decoration: underline;
+}
